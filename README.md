@@ -31,7 +31,7 @@ npm run typecheck   # vérification de types (tsc --noEmit), non bloquante pour 
 
 Un dev container est fourni (`.devcontainer/`). Dans VS Code :
 *Dev Containers : Reopen in Container*. Il fournit **Node 20 + TypeScript**, les
-extensions VS Code utiles (ESLint, Prettier, HTML/CSS, Vite, Docker, paths…), et
+extensions VS Code utiles (ESLint, Prettier, HTML/CSS, Vite, paths…), et
 exécute `.devcontainer/post-create.sh` à la création :
 
 - `npm install` (Vite + TypeScript) ;
@@ -81,47 +81,30 @@ est *monté* à la fois (sa boucle d'animation s'arrête au démontage).
 
 L'onglet actif est reflété dans l'URL (`#id`).
 
-## Déploiement Docker (NAS Unraid)
+## Déploiement (NAS Unraid)
 
-Le site est **statique** une fois construit : on le sert avec un nginx. L'image
-fournie est multi-étapes (build Node → nginx).
+Le site est **statique** une fois construit. On le sert avec un simple conteneur
+**nginx** sur le NAS, et on y synchronise `dist/` via `rsync` — **aucune image à
+construire**.
 
-### Construire & lancer (n'importe quel hôte Docker)
+### Préparation (une seule fois)
+
+1. Sur Unraid, onglet *Docker* → *Add Container* :
+   - Repository : `nginx:alpine`
+   - Port : `8087` (host) → `80` (container)
+   - Path : `/mnt/user/appdata/physics/site` → `/usr/share/nginx/html` (read-only)
+2. Copier `.env.deploy.example` en `.env.deploy` (non versionné) et y renseigner
+   l'hôte/chemin SSH du NAS.
+
+### Déployer (à chaque mise à jour)
 
 ```bash
-docker compose up -d --build      # http://<ip>:8087
-# ou, sans compose :
-docker build -t physique-interactive .
-docker run -d --restart unless-stopped -p 8087:80 --name physics physique-interactive
+npm run deploy                # build + rsync de dist/ vers le NAS
+npm run deploy -- --dry-run   # aperçu sans rien écrire
 ```
 
-### Sur Unraid — chemin minimal
-
-**Option A — plugin « Docker Compose Manager » (recommandé, build sur le NAS)**
-
-1. Installer *Docker Compose Manager* depuis **Community Applications**.
-2. Copier ce dépôt dans un share, p. ex. `/mnt/user/appdata/physics`.
-3. Dans Compose Manager : *Add New Stack* → pointer sur le `docker-compose.yml`
-   du dossier → **Compose Up**. Unraid construit l'image et démarre le conteneur.
-4. Ouvrir `http://<ip-du-nas>:8087`. Change le port hôte dans `docker-compose.yml`
-   (`8087:80`) si besoin.
-
-**Option B — sans build sur le NAS (le plus léger)**
-
-Construire ailleurs (`npm run build`), copier `dist/` sur le NAS
-(`/mnt/user/appdata/physics/site`), puis ajouter un conteneur **nginx** via
-l'onglet *Docker* d'Unraid :
-
-- Repository : `nginx:alpine`
-- Port : `8087` (host) → `80` (container)
-- Path : `/mnt/user/appdata/physics/site` → `/usr/share/nginx/html` (read-only)
-
-Aucune image custom à construire ; nginx sert directement les fichiers.
-
-**Option C — registre**
-
-Builder puis pousser vers Docker Hub / GHCR, et en mode *Docker* Unraid renseigner
-simplement l'image et le mappage de port `8087:80`.
+Le script `deploy.sh` fait `npm run build` puis un `rsync --delete` de `dist/`
+vers `NAS_USER@NAS_HOST:NAS_PATH` via SSH. Ouvrir ensuite `http://<ip-du-nas>:8087`.
 
 ## Détails d'implémentation
 

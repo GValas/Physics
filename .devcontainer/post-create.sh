@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# 0) Outils de déploiement : rsync + client SSH (requis par `npm run deploy`).
+#    Présents dans l'image de base, mais on les garantit explicitement (idempotent :
+#    on n'installe que ce qui manque).
+need=()
+command -v rsync >/dev/null 2>&1 || need+=(rsync)
+command -v ssh   >/dev/null 2>&1 || need+=(openssh-client)
+if [ "${#need[@]}" -gt 0 ]; then
+  echo "Installation des outils de déploiement : ${need[*]}"
+  sudo apt-get update && sudo apt-get install -y --no-install-recommends "${need[@]}"
+fi
+
 # 1) Dépendances du projet (Vite + TypeScript)
 npm install
 

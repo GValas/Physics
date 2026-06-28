@@ -7,12 +7,17 @@
     "4173": { "label": "Vite preview" }
   },
   "postCreateCommand": "bash .devcontainer/post-create.sh",
+  // Réutilise les clés SSH de l'hôte (pour `npm run deploy` vers le NAS).
+  // Elles survivent ainsi aux rebuilds du conteneur, contrairement à une clé
+  // générée à l'intérieur. ${localEnv:HOME} = home de l'hôte (Linux/WSL/macOS).
+  "mounts": [
+    "source=${localEnv:HOME}/.ssh,target=/home/node/.ssh,type=bind,consistency=cached"
+  ],
   "customizations": {
     "vscode": {
       "extensions": [
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
-        "ms-azuretools.vscode-docker",
         "ecmel.vscode-html-css",
         "formulahendry.auto-rename-tag",
         "christian-kohler.path-intellisense",

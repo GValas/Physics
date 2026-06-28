@@ -70,12 +70,12 @@ the user switches tabs. `help` is injected as raw HTML into `#footer`.
 
 ## Deployment
 
-The built site is fully static. The multi-stage `Dockerfile` builds with Node then
-serves `dist/` from `nginx:alpine` (`nginx.conf` handles gzip + long-cache for
-Vite's hashed `/assets/`, no-cache for `index.html`). `docker compose up -d --build`
-exposes it on port 8087 (intended for an Unraid NAS — see README for the Unraid paths).
-`vite.config.ts` uses `base: "./"` (relative paths) so the site works under any
-reverse-proxy sub-path without reconfiguration.
+The built site is fully static. Deployment is a single command — `npm run deploy`
+(`deploy.sh`) runs `npm run build` then `rsync --delete`s `dist/` over SSH to a
+folder served by a plain `nginx:alpine` container on the Unraid NAS (no image is
+built). Target host/path come from `.env.deploy` (gitignored; see
+`.env.deploy.example`) or env vars. `vite.config.ts` uses `base: "./"` (relative
+paths) so the site works under any reverse-proxy sub-path without reconfiguration.
 
 ## Dev container
 

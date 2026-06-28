@@ -1,8 +1,0 @@
-services:
-  physics:
-    build: .
-    image: physique-interactive:latest
-    container_name: physique-interactive
-    ports:
-      - "8087:80"          # http://<ip-du-nas>:8087
-    restart: unless-stopped
