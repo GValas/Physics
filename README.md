@@ -12,6 +12,7 @@ dépendance d'exécution**), organisés par onglets. Construit avec **Vite**.
 | **Équations de Maxwell** | les 4 équations en **3D** (caméra orbitale) + l'onde EM |
 | **Composants RLC** | résistance, condensateur, bobine, circuit RLC : équations, charges, champs E/B, oscilloscope |
 | **Relativité générale** | courbure de l'espace-temps (3D), précession des orbites, trou noir & déviation de la lumière |
+| **Fluides (Navier-Stokes)** | simulation temps réel (Stable Fluids) : tourbillon interactif, convection, allée de von Kármán |
 
 ## Démarrage rapide
 

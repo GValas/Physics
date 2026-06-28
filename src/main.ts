@@ -6,6 +6,7 @@ import "./modules/electric-current";
 import "./modules/maxwell";
 import "./modules/rlc";
 import "./modules/general-relativity";
+import "./modules/fluids";
 
 import { boot } from "./shell";
 
