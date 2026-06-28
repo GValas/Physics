@@ -3,96 +3,27 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Calcul vectoriel — Gradient, Divergence, Rotationnel</title>
+<title>Physique interactive</title>
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 <header>
-  <h1>Champs de vecteurs &amp; opérateurs différentiels</h1>
-  <p class="subtitle">
-    Visualisation interactive du <strong>gradient</strong>, de la
-    <strong>divergence</strong> et du <strong>rotationnel</strong>.
-  </p>
+  <h1>Physique interactive</h1>
+  <p class="subtitle" id="subtitle"></p>
 </header>
 
+<nav class="tabs" id="tabs" role="tablist" aria-label="Modules"></nav>
+
 <main>
-  <section class="stage">
-    <canvas id="field" width="720" height="720" aria-label="Champ de vecteurs"></canvas>
-    <div id="probe-readout" class="probe-readout" aria-live="polite"></div>
-  </section>
-
-  <aside class="panel">
-    <div class="group">
-      <h2>Opérateur</h2>
-      <div class="seg" id="op-seg" role="tablist">
-        <button class="seg-btn active" data-op="gradient">Gradient ∇f</button>
-        <button class="seg-btn" data-op="divergence">Divergence ∇·F</button>
-        <button class="seg-btn" data-op="curl">Rotationnel ∇×F</button>
-      </div>
-      <p class="hint" id="op-desc"></p>
-    </div>
-
-    <div class="group">
-      <h2>Champ</h2>
-      <select id="preset"></select>
-      <div class="formula" id="formula"></div>
-    </div>
-
-    <div class="group">
-      <h2>Paramètres</h2>
-      <label class="slider">
-        <span>Amplitude <em id="amp-val">1.0</em></span>
-        <input type="range" id="amp" min="0.2" max="3" step="0.1" value="1" />
-      </label>
-      <label class="slider">
-        <span>Échelle spatiale <em id="freq-val">1.0</em></span>
-        <input type="range" id="freq" min="0.4" max="2.5" step="0.1" value="1" />
-      </label>
-      <label class="slider">
-        <span>Densité des flèches <em id="grid-val">22</em></span>
-        <input type="range" id="grid" min="10" max="40" step="1" value="22" />
-      </label>
-      <label class="slider">
-        <span>Particules de flux <em id="parts-val">900</em></span>
-        <input type="range" id="parts" min="0" max="3000" step="100" value="900" />
-      </label>
-      <label class="slider">
-        <span>Vitesse du flux <em id="speed-val">1.0</em></span>
-        <input type="range" id="speed" min="0" max="3" step="0.1" value="1" />
-      </label>
-    </div>
-
-    <div class="group">
-      <h2>Affichage</h2>
-      <label class="check"><input type="checkbox" id="show-arrows" checked /> Flèches du champ</label>
-      <label class="check"><input type="checkbox" id="show-heat" checked /> Fond coloré (opérateur)</label>
-      <label class="check"><input type="checkbox" id="show-flux" checked /> Flux de particules</label>
-      <label class="check"><input type="checkbox" id="show-contours" /> Lignes de niveau (gradient)</label>
-      <label class="check"><input type="checkbox" id="show-probe" checked /> Sonde locale (souris)</label>
-    </div>
-
-    <div class="group legend">
-      <h2>Légende du fond</h2>
-      <div class="bar"><span class="bar-grad"></span></div>
-      <div class="bar-labels"><span id="leg-min">−</span><span id="leg-mid">0</span><span id="leg-max">+</span></div>
-      <p class="hint" id="legend-desc"></p>
-    </div>
-
-    <div class="group">
-      <button id="reset" class="reset">Réinitialiser</button>
-    </div>
-  </aside>
+  <div id="module-root"></div>
 </main>
 
-<footer>
-  <p>
-    Déplace la souris sur le champ pour sonder la valeur locale de l'opérateur.
-    Les particules suivent le champ&nbsp;: elles s'écartent d'une source
-    (divergence&nbsp;&gt;&nbsp;0) et tournent autour d'un tourbillon
-    (rotationnel&nbsp;≠&nbsp;0).
-  </p>
-</footer>
+<footer id="footer"></footer>
 
+<!-- Shell : doit être chargé avant les modules (définit window.Physics) -->
 <script src="app.js"></script>
+
+<!-- Modules de physique -->
+<script src="modules/vector-calculus.js"></script>
 </body>
 </html>

@@ -29,16 +29,48 @@ header h1 {
   font-size: clamp(1.2rem, 2.4vw, 1.9rem);
   letter-spacing: 0.3px;
 }
-.subtitle { margin: 4px 0 0; color: var(--muted); font-size: 0.95rem; }
+.subtitle { margin: 4px 0 0; color: var(--muted); font-size: 0.95rem; min-height: 1.2em; }
+
+/* ----- barre d'onglets (modules) ----- */
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  max-width: 1180px;
+  margin: 14px auto 0;
+  padding: 0 28px;
+}
+.tab {
+  background: var(--panel-2);
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.tab:hover { border-color: var(--accent); color: var(--ink); }
+.tab.active {
+  background: linear-gradient(180deg, #1f88c0, #146a9d);
+  border-color: var(--accent);
+  color: var(--ink);
+  font-weight: 600;
+}
 
 main {
+  padding: 16px 28px 8px;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+/* ----- disposition du module « calcul vectoriel » ----- */
+.vc-layout {
   display: grid;
   grid-template-columns: minmax(320px, 1fr) 340px;
   gap: 20px;
   align-items: start;
-  padding: 16px 28px 8px;
-  max-width: 1180px;
-  margin: 0 auto;
 }
 
 .stage {
@@ -173,6 +205,6 @@ footer {
 }
 
 @media (max-width: 880px) {
-  main { grid-template-columns: 1fr; }
+  .vc-layout { grid-template-columns: 1fr; }
   .panel { order: 2; }
 }
