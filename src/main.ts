@@ -4,6 +4,8 @@ import "./style.css";
 import "./modules/vector-calculus";
 import "./modules/electric-current";
 import "./modules/maxwell";
+import "./modules/rlc";
+import "./modules/general-relativity";
 
 import { boot } from "./shell";
 

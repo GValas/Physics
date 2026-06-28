@@ -10,6 +10,8 @@ dépendance d'exécution**), organisés par onglets. Construit avec **Vite**.
 | **Calcul vectoriel** | gradient ∇f, divergence ∇·F, rotationnel ∇×F et flux associé |
 | **Courant électrique** | modèle microscopique : électrons, dérive, intensité, tension, résistance, champ E |
 | **Équations de Maxwell** | les 4 équations en **3D** (caméra orbitale) + l'onde EM |
+| **Composants RLC** | résistance, condensateur, bobine, circuit RLC : équations, charges, champs E/B, oscilloscope |
+| **Relativité générale** | courbure de l'espace-temps (3D), précession des orbites, trou noir & déviation de la lumière |
 
 ## Démarrage rapide
 
