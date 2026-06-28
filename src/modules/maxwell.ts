@@ -16,6 +16,7 @@ const SIZE = 720;
 const R = 2.5;                     // demi-étendue du domaine (coords monde)
 const FOCAL = 820;                 // distance focale (perspective)
 const A_REGION = 1.3;             // rayon de la zone de B variable (Faraday)
+const POLE_N = 0.95;              // position du pôle N de l'aimant (sur +x)
 const C = SIZE / 2;               // centre écran
 
 /* ========================================================================= */
@@ -264,16 +265,26 @@ function drawArrows() {
 /*  Particules de flux (3D)                                                  */
 /* ========================================================================= */
 function rnd() { return (Math.random() * 2 - 1) * R; }
+function sphereDir(r) {            // point aléatoire à distance r de l'origine
+  const u = Math.random() * 2 - 1, th = Math.random() * Math.PI * 2;
+  const s = Math.sqrt(1 - u * u);
+  return [r * s * Math.cos(th), r * s * Math.sin(th), r * u];
+}
 function spawnPos() {
-  // En mode Gauss électrique, ré-émettre une partie des particules tout près
-  // des charges + : sinon elles fuient si vite que les sources paraissent vides.
+  // Ré-émettre une partie des particules tout près des « sources » du champ,
+  // sinon elles fuient si vite que les sources paraissent vides.
   if (state.mode === "gauss-e") {
     const pos = charges.filter((c) => c.q > 0);
     if (pos.length && Math.random() < 0.6) {
       const c = pos[(Math.random() * pos.length) | 0];
-      const u = Math.random() * 2 - 1, th = Math.random() * Math.PI * 2;
-      const s = Math.sqrt(1 - u * u), r = 0.45 + Math.random() * 0.3;
-      return [c.x + r * s * Math.cos(th), c.y + r * s * Math.sin(th), c.z + r * u];
+      const d = sphereDir(0.45 + Math.random() * 0.3);
+      return [c.x + d[0], c.y + d[1], c.z + d[2]];
+    }
+  } else if (state.mode === "gauss-b") {
+    // émettre autour du pôle N (+x) : les lignes en sortent et bouclent vers S
+    if (Math.random() < 0.65) {
+      const d = sphereDir(0.3 + Math.random() * 0.45);
+      return [POLE_N + d[0], d[1], d[2]];
     }
   }
   return [rnd(), rnd(), rnd()];
@@ -363,10 +374,10 @@ function helpGaussE() {
   }
 }
 function helpGaussB() {
-  // barreau aimanté le long de x (N rouge / S bleu)
-  box3(-0.2, 0, 0, 1.4, 0.45, 0.45, "88,166,255");   // S côté −x
-  box3(0.2, 0, 0, 1.4, 0.45, 0.45, "255,77,77");      // N côté +x (recouvre, ok visuellement)
-  label3(1.0, 0, 0, "N", "#ffb0b0"); label3(-1.0, 0, 0, "S", "#b0d0ff");
+  // barreau aimanté le long de x : deux moitiés jointives S (−x) / N (+x)
+  box3(-0.45, 0, 0, 0.9, 0.5, 0.5, "88,166,255");   // S côté −x
+  box3(0.45, 0, 0, 0.9, 0.5, 0.5, "255,77,77");     // N côté +x
+  label3(1.1, 0, 0, "N", "#ffb0b0"); label3(-1.1, 0, 0, "S", "#b0d0ff");
   // surface de Gauss : flux net nul
   circle3([0,0,0], [1,0,0], [0,1,0], 1.7, "255,209,102", 1.2, 0.45);
   circle3([0,0,0], [0,1,0], [0,0,1], 1.7, "255,209,102", 1.2, 0.45);
@@ -478,7 +489,7 @@ function updateReadout() {
       if (Math.hypot(c.x, c.y, c.z) < 1.6) q += state.amp * c.q;
     txt = `∮ E·dA = Q_int/ε₀\nQ_int (sphère) = ${fmt(q)}\nΦ_E = ${fmt(q)}`;
   } else if (state.mode === "gauss-b") {
-    txt = `∮ B·dA = 0\nFlux entrant = flux sortant\n→ pas de monopôle`;
+    txt = `∮ B·dA = 0\nautant de lignes sortent du N\nqu'il n'en rentre dans le S\n→ pas de monopôle`;
   } else if (state.mode === "faraday") {
     const emf = -Math.PI * A_REGION * A_REGION * dBdt();
     txt = `∮ E·dl = −dΦ_B/dt\nB(t) = ${fmt(bUniform())}\ndB/dt = ${fmt(dBdt())}\nf.é.m. = ${fmt(emf)}`;
@@ -690,6 +701,46 @@ function mount(root: HTMLElement) {
     cam.dist = clamp(cam.dist + Math.sign(e.deltaY) * 0.4, 4, 14);
     e.preventDefault();
   }, { passive: false });
+
+  /* ---- tactile : 1 doigt = orbite, 2 doigts = zoom (pincement) ---- */
+  let pinchDist = 0;
+  const touchDist = (e) => {
+    const a = e.touches[0], b = e.touches[1];
+    return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+  };
+  canvas.addEventListener("touchstart", (e) => {
+    if (e.touches.length === 1) {
+      drag.on = true; drag.x = e.touches[0].clientX; drag.y = e.touches[0].clientY; drag.moved = 0;
+    } else if (e.touches.length === 2) {
+      drag.on = false; pinchDist = touchDist(e);
+    }
+  }, { passive: false });
+  canvas.addEventListener("touchmove", (e) => {
+    if (e.touches.length === 1 && drag.on) {
+      const t = e.touches[0];
+      const dx = t.clientX - drag.x, dy = t.clientY - drag.y;
+      drag.x = t.clientX; drag.y = t.clientY;
+      drag.moved += Math.abs(dx) + Math.abs(dy);
+      cam.yaw += dx * 0.01;
+      cam.pitch = clamp(cam.pitch + dy * 0.01, -1.45, 1.45);
+      e.preventDefault();
+    } else if (e.touches.length === 2) {
+      const d = touchDist(e);
+      if (pinchDist) cam.dist = clamp(cam.dist * (pinchDist / d), 4, 14);
+      pinchDist = d;
+      e.preventDefault();
+    }
+  }, { passive: false });
+  canvas.addEventListener("touchend", (e) => {
+    if (drag.on && drag.moved < 8 && state.mode === "gauss-e" && e.changedTouches[0]) {
+      const r = canvas.getBoundingClientRect();
+      const sx = ((e.changedTouches[0].clientX - r.left) / r.width) * SIZE;
+      const sy = ((e.changedTouches[0].clientY - r.top) / r.height) * SIZE;
+      const w = unprojectToZ0(sx, sy);
+      if (w) charges.push({ x: w[0], y: w[1], z: 0, q: 1 });
+    }
+    if (e.touches.length === 0) { drag.on = false; pinchDist = 0; }
+  });
 
   applyStateToUI(); syncModeUI(); syncParticles();
   running = true;

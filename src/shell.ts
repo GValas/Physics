@@ -12,6 +12,18 @@ export function boot(): void {
   const subtitleEl = document.getElementById("subtitle")!;
   const footerEl = document.getElementById("footer")!;
 
+  // bouton flottant (visible en mobile) pour replier/déplier les réglages
+  const toggle = document.createElement("button");
+  toggle.id = "panel-toggle";
+  toggle.type = "button";
+  toggle.setAttribute("aria-label", "Afficher ou masquer les réglages");
+  toggle.textContent = "⚙ Réglages";
+  toggle.addEventListener("click", () => {
+    const open = document.body.classList.toggle("controls-open");
+    toggle.textContent = open ? "✕ Fermer" : "⚙ Réglages";
+  });
+  document.body.appendChild(toggle);
+
   const modules = getModules();
   let instance: ModuleInstance | null = null;
   let activeId: string | null = null;

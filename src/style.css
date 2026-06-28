@@ -105,6 +105,25 @@ canvas {
   border-radius: 8px;
   background: #060912;
   cursor: crosshair;
+  touch-action: none;   /* gestes (orbite/sonde) gérés par le canvas, pas le navigateur */
+}
+
+/* bouton flottant de repli des réglages (mobile uniquement) */
+#panel-toggle {
+  display: none;
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 50;
+  background: linear-gradient(180deg, #1f88c0, #146a9d);
+  color: #fff;
+  border: 1px solid var(--accent);
+  border-radius: 24px;
+  padding: 11px 17px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
 }
 .probe-readout {
   position: absolute;
@@ -222,6 +241,36 @@ footer {
 }
 
 @media (max-width: 880px) {
-  .vc-layout, .sim-layout { grid-template-columns: 1fr; }
-  .panel { order: 2; }
+  header { padding: 14px 16px 4px; }
+  .tabs { padding: 0 12px; gap: 6px; }
+  .tab { padding: 7px 13px; font-size: 0.85rem; }
+  main { padding: 10px 10px 8px; }
+  .vc-layout, .sim-layout { grid-template-columns: 1fr; gap: 12px; }
+  footer { padding: 4px 16px 88px; }   /* place sous le bouton flottant */
+
+  /* le panneau de réglages devient une feuille repliable en bas d'écran */
+  #panel-toggle { display: block; }
+  .panel {
+    display: none;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: 80vh;
+    overflow-y: auto;
+    z-index: 40;
+    border-radius: 16px 16px 0 0;
+    border-bottom: none;
+    padding: 6px 16px calc(16px + env(safe-area-inset-bottom));
+    box-shadow: 0 -12px 34px rgba(0, 0, 0, 0.55);
+  }
+  body.controls-open .panel { display: block; }
+  /* léger voile sur le contenu quand la feuille est ouverte */
+  body.controls-open::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 39;
+  }
 }
