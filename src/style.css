@@ -65,12 +65,29 @@ main {
   margin: 0 auto;
 }
 
-/* ----- disposition du module « calcul vectoriel » ----- */
-.vc-layout {
+/* ----- disposition à deux colonnes partagée par les modules ----- */
+.vc-layout, .sim-layout {
   display: grid;
   grid-template-columns: minmax(320px, 1fr) 340px;
   gap: 20px;
   align-items: start;
+}
+
+/* ----- tableau de mesures (panneau) ----- */
+.measures { display: flex; flex-direction: column; gap: 2px; }
+.m-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 1.5px 0;
+  font-size: 0.8rem;
+  border-bottom: 1px dashed var(--line);
+}
+.m-row:last-child { border-bottom: none; }
+.m-row span { color: var(--muted); }
+.m-row b {
+  color: var(--accent);
+  font: 600 0.95rem "Consolas", monospace;
 }
 
 .stage {
@@ -110,28 +127,28 @@ canvas {
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 6px 16px 16px;
+  padding: 0 12px 6px;
   box-shadow: 0 18px 40px rgba(0,0,0,0.35);
 }
-.group { padding: 12px 0; border-bottom: 1px solid var(--line); }
+.group { padding: 6px 0; border-bottom: 1px solid var(--line); }
 .group:last-child { border-bottom: none; }
 .group h2 {
-  font-size: 0.78rem;
+  font-size: 0.66rem;
   text-transform: uppercase;
-  letter-spacing: 1.2px;
+  letter-spacing: 1px;
   color: var(--muted);
-  margin: 0 0 10px;
+  margin: 0 0 4px;
 }
 
-.seg { display: flex; flex-direction: column; gap: 6px; }
+.seg { display: flex; flex-direction: column; gap: 3px; }
 .seg-btn {
   text-align: left;
   background: var(--panel-2);
   color: var(--ink);
   border: 1px solid var(--line);
-  border-radius: 9px;
-  padding: 9px 12px;
-  font-size: 0.92rem;
+  border-radius: 7px;
+  padding: 4px 9px;
+  font-size: 0.84rem;
   cursor: pointer;
   transition: 0.15s;
 }
@@ -142,38 +159,38 @@ canvas {
   font-weight: 600;
 }
 
-.hint { color: var(--muted); font-size: 0.82rem; margin: 8px 0 0; }
+.hint { color: var(--muted); font-size: 0.76rem; margin: 5px 0 0; line-height: 1.3; }
 
 select {
   width: 100%;
   background: var(--panel-2);
   color: var(--ink);
   border: 1px solid var(--line);
-  border-radius: 9px;
-  padding: 9px 10px;
-  font-size: 0.92rem;
+  border-radius: 7px;
+  padding: 5px 8px;
+  font-size: 0.85rem;
 }
 .formula {
-  margin-top: 10px;
+  margin-top: 6px;
   background: #0a1019;
   border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 9px 11px;
-  font: 13px/1.5 "Consolas", monospace;
+  border-radius: 7px;
+  padding: 6px 9px;
+  font: 11.5px/1.4 "Consolas", monospace;
   color: var(--accent);
   white-space: pre-wrap;
 }
 
-.slider { display: block; margin: 12px 0; font-size: 0.86rem; }
+.slider { display: block; margin: 4px 0; font-size: 0.78rem; }
 .slider span { display: flex; justify-content: space-between; color: var(--muted); }
 .slider em { color: var(--accent); font-style: normal; }
-.slider input[type="range"] { width: 100%; margin-top: 6px; accent-color: var(--accent); }
+.slider input[type="range"] { width: 100%; height: 14px; margin-top: 1px; accent-color: var(--accent); }
 
 .check {
-  display: flex; align-items: center; gap: 9px;
-  margin: 9px 0; font-size: 0.9rem; cursor: pointer;
+  display: flex; align-items: center; gap: 7px;
+  margin: 3px 0; font-size: 0.82rem; cursor: pointer;
 }
-.check input { accent-color: var(--accent); width: 16px; height: 16px; }
+.check input { accent-color: var(--accent); width: 14px; height: 14px; }
 
 .legend .bar { height: 14px; border-radius: 7px; overflow: hidden; border: 1px solid var(--line); }
 .bar-grad {
@@ -188,10 +205,10 @@ select {
   background: var(--panel-2);
   color: var(--ink);
   border: 1px solid var(--line);
-  border-radius: 9px;
-  padding: 10px;
+  border-radius: 7px;
+  padding: 6px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.84rem;
 }
 .reset:hover { border-color: var(--accent-2); color: var(--accent-2); }
 
@@ -205,6 +222,6 @@ footer {
 }
 
 @media (max-width: 880px) {
-  .vc-layout { grid-template-columns: 1fr; }
+  .vc-layout, .sim-layout { grid-template-columns: 1fr; }
   .panel { order: 2; }
 }

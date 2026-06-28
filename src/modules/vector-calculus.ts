@@ -1,12 +1,11 @@
-"use strict";
+import { register } from "../registry";
 
 /* =========================================================================
    Module : Calcul vectoriel — gradient, divergence, rotationnel
    Visualisation interactive (canvas 2D, dérivées numériques).
-   S'enregistre auprès du shell via window.Physics.register().
+   S'enregistre auprès du shell via register() (voir src/registry.ts).
    ========================================================================= */
 
-(function () {
 
 const SIZE = 720;                  // résolution interne du canvas (px)
 const R = 3.0;                     // demi-étendue du domaine en coords "monde"
@@ -671,7 +670,7 @@ const TEMPLATE = `
 /* ========================================================================= */
 /*  Cycle de vie : mount / unmount                                           */
 /* ========================================================================= */
-function mount(root) {
+function mount(root: HTMLElement) {
   root.innerHTML = TEMPLATE;
 
   // état neuf à chaque entrée dans l'onglet
@@ -760,7 +759,7 @@ function unmount() {
 /* ========================================================================= */
 /*  Enregistrement auprès du shell                                           */
 /* ========================================================================= */
-window.Physics.register({
+register({
   id: "vector-calculus",
   title: "Calcul vectoriel",
   subtitle: "Visualisation interactive du gradient, de la divergence et du rotationnel.",
@@ -771,4 +770,3 @@ window.Physics.register({
   mount,
 });
 
-})();

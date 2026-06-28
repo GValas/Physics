@@ -4,7 +4,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Physique interactive</title>
-<link rel="stylesheet" href="style.css" />
 </head>
 <body>
 <header>
@@ -20,10 +19,6 @@
 
 <footer id="footer"></footer>
 
-<!-- Shell : doit être chargé avant les modules (définit window.Physics) -->
-<script src="app.js"></script>
-
-<!-- Modules de physique -->
-<script src="modules/vector-calculus.js"></script>
+<script type="module" src="/src/main.ts"></script>
 </body>
 </html>

@@ -1,0 +1,17 @@
+{
+  "name": "physique-interactive",
+  "version": "1.0.0",
+  "description": "Modules de physique interactifs (TypeScript + Vite, sans dépendance d'exécution).",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --host",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "vite": "^5.4.8"
+  }
+}
