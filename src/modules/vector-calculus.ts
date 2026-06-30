@@ -735,6 +735,10 @@ function mount(root: HTMLElement) {
   canvas.addEventListener("touchmove", (e) => {
     if (e.touches[0]) { updateMouse(e.touches[0]); e.preventDefault(); }
   }, { passive: false });
+  // sans cela la sonde resterait figée à l'écran après avoir levé le doigt
+  const endTouch = () => { mouse.inside = false; };
+  canvas.addEventListener("touchend", endTouch);
+  canvas.addEventListener("touchcancel", endTouch);
 
   // démarrage
   syncOpUI();

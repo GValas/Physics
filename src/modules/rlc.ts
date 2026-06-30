@@ -296,7 +296,14 @@ function drawOsc() {
   ctx.strokeRect(x0, y0, x1 - x0, y1 - y0);
   ctx.beginPath(); ctx.moveTo(x0, cy); ctx.lineTo(x1, cy); ctx.stroke();
 
-  const vMax = Math.max(state.U0, maxAbs(hist.uc), maxAbs(hist.ul), 1e-6);
+  // échelle verticale : ne tenir compte que des tensions réellement tracées
+  // (en RLC, hist.ul = u − R·i = u_C + u_bobine n'est pas affiché et fausserait l'échelle)
+  const vMax = Math.max(
+    state.U0,
+    (state.mode === "C" || state.mode === "RLC") ? maxAbs(hist.uc) : 0,
+    state.mode === "L" ? maxAbs(hist.ul) : 0,
+    1e-6
+  );
   const iMax = Math.max(maxAbs(hist.i), 1e-6);
   const amp = (y1 - y0) * 0.42;
 

@@ -139,7 +139,7 @@ function buildIons() {
 /*  Mise à jour                                                              */
 /* ========================================================================= */
 function step(dt) {
-  const drift = driftPx();        // dérive vers la gauche (vers la borne +)
+  const drift = driftPx();        // dérive vers la droite (vers la borne +)
   const th = thermalPx();
   const pColl = collisionProb();
 

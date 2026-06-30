@@ -698,7 +698,9 @@ function mount(root: HTMLElement) {
   window.addEventListener("mouseup", onWinUp);
   // molette : zoom
   canvas.addEventListener("wheel", (e) => {
-    cam.dist = clamp(cam.dist + Math.sign(e.deltaY) * 0.4, 4, 14);
+    // min ≥ demi-diagonale de la boîte (R√3 ≈ 4.33) : sinon des coins passent
+    // derrière la caméra (depth < 0) et la projection « explose » à l'écran
+    cam.dist = clamp(cam.dist + Math.sign(e.deltaY) * 0.4, 5, 14);
     e.preventDefault();
   }, { passive: false });
 
@@ -726,7 +728,7 @@ function mount(root: HTMLElement) {
       e.preventDefault();
     } else if (e.touches.length === 2) {
       const d = touchDist(e);
-      if (pinchDist) cam.dist = clamp(cam.dist * (pinchDist / d), 4, 14);
+      if (pinchDist) cam.dist = clamp(cam.dist * (pinchDist / d), 5, 14);
       pinchDist = d;
       e.preventDefault();
     }

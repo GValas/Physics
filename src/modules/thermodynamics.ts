@@ -32,6 +32,7 @@ let pistonV = 0;                       // vitesse du piston (course en cours)
 let partition = false;                 // cloison (2e principe)
 let partX = VMAX / 2;
 let kFactor = 1;                       // échelle d'affichage de T (≈300 au départ)
+let keMax = Infinity;                  // plafond d'énergie cinétique (anti-divergence du chauffage)
 
 /* bilans énergétiques (1er principe) — mesurés sur les chocs réels */
 let U0 = 1, Qtot = 0, Wgas = 0;        // Wgas = travail fourni PAR le gaz
@@ -79,6 +80,7 @@ function seedScene() {
   // calibre l'échelle de température (≈ 300 K au départ)
   const ke = meanKE();
   kFactor = ke > 0 ? 300 / ke : 1;
+  keMax = ke > 0 ? ke * 9 : 9;          // plafond du chauffage (≈ 2700 K) — évite la divergence
   U0 = internalU();
 }
 function placeParticles(x0, x1, twoSpecies) {
@@ -145,6 +147,9 @@ function reflectPartition() {
 function applyHeat(scale) {
   const before = meanKE() * NP;
   for (let i = 0; i < NP; i++) { vx[i] *= scale; vy[i] *= scale; }
+  // borne le chauffage : sinon un maintien prolongé fait diverger les vitesses
+  const ke = meanKE();
+  if (ke > keMax) { const s = Math.sqrt(keMax / ke); for (let i = 0; i < NP; i++) { vx[i] *= s; vy[i] *= s; } }
   Qtot += meanKE() * NP - before;
 }
 
@@ -379,7 +384,7 @@ function updateMeasures() {
     els.meas.innerHTML =
       row("Température", T.toFixed(1) + " K") +
       row("Paliers", String(coolSteps.length)) +
-      row("Vitesse moyenne", Math.sqrt(2 * meanKE()).toFixed(3)) +
+      row("Vitesse quadratique", Math.sqrt(2 * meanKE()).toFixed(3)) +
       row("Zéro absolu", "0 K — inatteignable");
   }
 }
@@ -522,11 +527,12 @@ function bindHold(el, key) {
   el.addEventListener("mouseup", up);
   el.addEventListener("mouseleave", up);
   el.addEventListener("touchend", up);
+  el.addEventListener("touchcancel", up);   // évite un bouton « collé » si le toucher est annulé
   // mémorise pour pouvoir détacher proprement
   holdCleanup.push(() => {
     el.removeEventListener("mousedown", down); el.removeEventListener("touchstart", down);
     el.removeEventListener("mouseup", up); el.removeEventListener("mouseleave", up);
-    el.removeEventListener("touchend", up);
+    el.removeEventListener("touchend", up); el.removeEventListener("touchcancel", up);
   });
 }
 let holdCleanup = [];

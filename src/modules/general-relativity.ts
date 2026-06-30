@@ -35,7 +35,7 @@ let drag = { on: false, x: 0, y: 0, moved: 0 };
 let onWinMove = null, onWinUp = null;
 
 /* orbite intégrée en direct (scène précession) */
-let orb = { u: 0, up: 0, phi: 0, Lsq: 1, trail: [] };
+let orb = { u: 0, up: 0, phi: 0, Lsq: 1, trail: [], lastLog: -1 };
 
 /* rayons lumineux pré-calculés (scène trou noir) */
 let rayPaths = [];
@@ -73,15 +73,6 @@ function proj(gx, gy, h) {
 function wellH(gx, gy) {
   const r = Math.sqrt(gx * gx + gy * gy);
   return -3.2 * state.M / (r * 0.18 + 0.5);   // creux ∝ M, borné au centre
-}
-
-function drawArrow(c, x0, y0, x1, y1, head) {
-  c.beginPath(); c.moveTo(x0, y0); c.lineTo(x1, y1); c.stroke();
-  const ang = Math.atan2(y1 - y0, x1 - x0), hs = head || 6;
-  c.beginPath(); c.moveTo(x1, y1);
-  c.lineTo(x1 - hs * Math.cos(ang - 0.4), y1 - hs * Math.sin(ang - 0.4));
-  c.lineTo(x1 - hs * Math.cos(ang + 0.4), y1 - hs * Math.sin(ang + 0.4));
-  c.closePath(); c.fill();
 }
 
 /* ========================================================================= */
@@ -140,23 +131,28 @@ function resetOrbit() {
   const p = state.a * (1 - state.e * state.e);     // paramètre (demi-latus rectum)
   orb.Lsq = state.M * p;                            // L² ≈ M·p
   orb.u = (1 + state.e) / p;                        // au périhélie (φ = 0)
-  orb.up = 0; orb.phi = 0; orb.trail = [];
+  orb.up = 0; orb.phi = 0; orb.trail = []; orb.lastLog = -1;
 }
 function stepOrbit(dt) {
   const M = state.M, Lsq = orb.Lsq;
-  const sub = 60, h = (dt * state.speed * 0.7) / sub;
+  const sub = 60, h = (dt * state.speed * 3.2) / sub;
   for (let k = 0; k < sub; k++) {
     const L = Math.sqrt(Lsq);
     const dphi = L * orb.u * orb.u * h;             // dφ/dt = L·u² (vitesse aréolaire)
     const acc = M / Lsq + 3 * M * orb.u * orb.u - orb.u;
-    orb.up += acc * dphi;
+    orb.up += acc * dphi;                           // intégrateur d'Euler-Cromer (symplectique)
     orb.u += orb.up * dphi;
     orb.phi += dphi;
     orb.u = clamp(orb.u, 1e-4, 1 / (rs() * 1.05));  // garde-fou
-    const r = 1 / orb.u;
-    orb.trail.push([r * Math.cos(orb.phi), r * Math.sin(orb.phi)]);
+    // échantillonnage à pas d'angle ~constant : la rosette reste lisible
+    // quelle que soit la vitesse et s'accumule sur de nombreuses orbites
+    if (orb.phi - orb.lastLog >= 0.015) {
+      orb.lastLog = orb.phi;
+      const r = 1 / orb.u;
+      orb.trail.push([r * Math.cos(orb.phi), r * Math.sin(orb.phi)]);
+    }
   }
-  if (orb.trail.length > 3600) orb.trail.splice(0, orb.trail.length - 3600);
+  if (orb.trail.length > 5000) orb.trail.splice(0, orb.trail.length - 5000);
 }
 function drawPrecession(dt) {
   stepOrbit(dt);

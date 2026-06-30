@@ -177,8 +177,9 @@ function seedScene() {
     applyConductionBC();
   } else if (state.mode === "convection") {
     // léger bruit pour amorcer l'instabilité de Rayleigh-Bénard
+    // (j croît vers le bas : chaud en bas → T augmente avec j)
     for (let j = 1; j <= N; j++) for (let i = 1; i <= N; i++)
-      T[IX(i, j)] = 1 - j / (N + 1) + (Math.random() - 0.5) * 0.05;
+      T[IX(i, j)] = j / (N + 1) + (Math.random() - 0.5) * 0.05;
   }
 }
 
@@ -530,6 +531,7 @@ function mount(root: HTMLElement) {
   root.innerHTML = TEMPLATE;
   state = { ...DEFAULTS };
   lastT = 0;
+  pointer.down = false;
 
   canvas = root.querySelector("#ht-canvas");
   ctx = canvas.getContext("2d");
