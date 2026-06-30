@@ -9,6 +9,8 @@ import "./modules/general-relativity";
 import "./modules/fluids";
 import "./modules/heat";
 import "./modules/thermodynamics";
+import "./modules/young";
+import "./modules/inertial-forces";
 
 import { boot } from "./shell";
 
