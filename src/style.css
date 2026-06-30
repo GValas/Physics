@@ -30,6 +30,7 @@ header h1 {
   letter-spacing: 0.3px;
 }
 .subtitle { margin: 4px 0 0; color: var(--muted); font-size: 0.95rem; min-height: 1.2em; }
+.build-date { margin: 2px 0 0; color: var(--muted); opacity: 0.6; font-size: 0.72rem; }
 
 /* ----- barre d'onglets (modules) ----- */
 .tabs {

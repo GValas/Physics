@@ -1,6 +1,9 @@
 import { getModules } from "./registry";
 import type { ModuleInstance, PhysicsModule } from "./types";
 
+/* Injectée par Vite (define) au moment du build — voir vite.config.ts. */
+declare const __BUILD_DATE__: string;
+
 /* =========================================================================
    Shell : barre d'onglets + cycle de vie mount / unmount.
    Un seul module monté à la fois ; l'onglet actif est reflété dans l'URL.
@@ -11,6 +14,10 @@ export function boot(): void {
   const rootEl = document.getElementById("module-root")!;
   const subtitleEl = document.getElementById("subtitle")!;
   const footerEl = document.getElementById("footer")!;
+
+  // date de dernière compilation / déploiement (figée au build)
+  const buildEl = document.getElementById("build-date");
+  if (buildEl) buildEl.textContent = "Mis en ligne le " + __BUILD_DATE__;
 
   // bouton flottant (visible en mobile) pour replier/déplier les réglages
   const toggle = document.createElement("button");
