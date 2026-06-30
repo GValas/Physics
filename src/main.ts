@@ -7,6 +7,8 @@ import "./modules/maxwell";
 import "./modules/rlc";
 import "./modules/general-relativity";
 import "./modules/fluids";
+import "./modules/heat";
+import "./modules/thermodynamics";
 
 import { boot } from "./shell";
 
